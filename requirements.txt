@@ -1,0 +1,10 @@
+apache-airflow
+pyspark
+pandas
+psycopg2-binary
+sqlalchemy
+scikit-learn
+fastapi
+uvicorn
+pyjwt
+requests
