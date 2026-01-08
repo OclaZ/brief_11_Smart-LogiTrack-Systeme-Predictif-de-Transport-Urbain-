@@ -14,3 +14,4 @@ data/
 *.csv
 *.json
 *.db
+models/

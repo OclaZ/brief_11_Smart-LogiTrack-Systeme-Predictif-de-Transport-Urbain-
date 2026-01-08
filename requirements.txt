@@ -10,3 +10,16 @@ pandas
 
 numpy
 scikit-learn
+matplotlib
+seaborn
+
+
+# api
+
+fastapi
+uvicorn
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+pydantic
