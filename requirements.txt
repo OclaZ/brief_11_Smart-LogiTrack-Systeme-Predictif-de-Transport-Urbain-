@@ -4,6 +4,7 @@ psycopg2-binary
 # Spark
 pyspark
 fastparquet
+pyarrow
 
 pyarrow==14.0.2
 pandas
@@ -22,4 +23,4 @@ sqlalchemy
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
-pydantic
+bcrypt==3.2.2

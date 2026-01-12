@@ -1,21 +1,20 @@
 
 services:
-
   postgres:
     image: postgres:16
-    ports:                
-      - "5432:5432"       
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.d # Exécute init.sql au démarrage
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
-      timeout: 5s
       retries: 5
-    volumes:
-      - postgres-db:/var/lib/postgresql/data
 
   airflow-init:
     build: .
@@ -34,28 +33,42 @@ services:
     build: .
     container_name: airflow
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      # Variables pour vos scripts
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: taxidb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
-      - ./plugins:/opt/airflow/plugins
-      - ./requirements.txt:/requirements.txt  
-      - ./data:/opt/airflow/data   
-    command: >
-      bash -c "
-        pip install --no-cache-dir -r /requirements.txt &&
-        airflow scheduler &
-        airflow webserver
-      "
-    depends_on:
-      airflow-init:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
+      - ./data:/opt/airflow/data       # Volume partagé pour les données
+      - ./scripts:/opt/airflow/scripts # Volume pour vos scripts Python
+      - ./models:/opt/airflow/models   # Volume pour sauvegarder le modèle
     ports:
       - "8080:8080"
+    command: airflow webserver --scheduler
+
+  # Ajout de votre API
+  fastapi_app:
+    build: ./api
+    container_name: fastapi_app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres:5432/taxidb
+    volumes:
+      - ./models:/app/models # L'API lit le modèle entraîné par Airflow ici
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 volumes:
   postgres-db:
