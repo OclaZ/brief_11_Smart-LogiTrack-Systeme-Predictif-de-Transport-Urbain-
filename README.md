@@ -72,8 +72,8 @@ Volume Partagé - FastAPI (Inférence en Temps Réel)
 |----------------------------|---------------------|
 | **RMSE** (Erreur Moyenne)  | ~4.69 minutes       |
 | **R²** (Précision)         | 0.76 (76%)          |
-| **Dataset d'Entraînement** | ~1.8M enregistrements |
-| **Dataset de Test**        | ~469k enregistrements |
+| **Dataset d'Entraînement** | ~2.2M enregistrements |
+| **Dataset de Test**        | ~560k enregistrements |
 
 ### Endpoints de l'API
 
