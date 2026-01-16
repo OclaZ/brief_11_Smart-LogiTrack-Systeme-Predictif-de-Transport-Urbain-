@@ -49,11 +49,10 @@ services:
       - ./logs:/opt/airflow/logs
       - ./data:/opt/airflow/data       # Volume partagé pour les données
       - ./scripts:/opt/airflow/scripts # Volume pour vos scripts Python
-      - ./models:/opt/airflow/models   # Volume pour sauvegarder le modèle
+      - ./api/models:/opt/airflow/models   # Volume pour sauvegarder le modèle
     ports:
       - "8080:8080"
-    command: airflow webserver --scheduler
-
+    command: bash -c "airflow scheduler & airflow webserver"
   # Ajout de votre API
   fastapi_app:
     build: ./api
@@ -65,7 +64,7 @@ services:
     environment:
       DATABASE_URL: postgresql://user:password@postgres:5432/taxidb
     volumes:
-      - ./models:/app/models # L'API lit le modèle entraîné par Airflow ici
+      - ./api/models:/app/models# L'API lit le modèle entraîné par Airflow ici
     ports:
       - "8000:8000"
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000

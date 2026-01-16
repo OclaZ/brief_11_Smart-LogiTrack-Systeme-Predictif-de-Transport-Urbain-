@@ -11,3 +11,5 @@ pandas
 pyarrow
 numpy
 python-dotenv
+pytest         
+httpx         
